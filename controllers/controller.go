@@ -45,7 +45,12 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	}
 	
 	func (uc *UserController) GetAll(ctx *gin.Context) {
-		ctx.JSON(200,"")
+		user,err := uc.UserService.GetAll()
+		if err != nil {
+			ctx.JSON(http.StatusBadGateway,gin.H{"error":err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK,user)
 	}
 	
 	func (uc *UserController) UpdateUser(ctx *gin.Context)  {

@@ -38,7 +38,31 @@ func (u *UserServiceImpl) GetUser(name *string) (*models.User,error){
 }
 
 func (u *UserServiceImpl) GetAll() ([]*models.User,error){
-	return nil,nil
+	var users []*models.User
+	cursor,err := u.usercollection.Find(u.ctx,bson.D{{}})
+	if err != nil{
+		return nil,err
+	}
+
+	for cursor.Next(u.ctx) {
+		var user models.User
+		err := cursor.Decode(&user)
+		if err != nil {
+			return nil,err
+		}
+		users = append(users, &user)
+	}
+ if err := cursor.Err();err != nil{
+	return nil,err
+ }
+ cursor.Close(u.ctx)
+if len(users) == 0{
+	return nil,errors.New("documents not found")
+}
+return nil,nil
+
+
+	
 }
 
 func (u *UserServiceImpl) UpdateUser(user *models.User) error {
@@ -56,5 +80,12 @@ func (u *UserServiceImpl) UpdateUser(user *models.User) error {
 }
 
 func (u *UserServiceImpl) DeleteUser(name *string) error {
+	
+	filter := bson.D{bson.E{Key:"user_name",Value:name}}
+  result,_ := u.usercollection.DeleteOne(u.ctx,filter)
+
+	if result.DeletedCount != 1{
+		return errors.New("no matched document found for update")
+	}
 	return nil
 }
