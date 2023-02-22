@@ -49,11 +49,29 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	}
 	
 	func (uc *UserController) UpdateUser(ctx *gin.Context)  {
-		ctx.JSON(200,"")
+		var user models.User
+		if err := ctx.ShouldBindJSON(&user); err != nil{
+			ctx.JSON(http.StatusBadRequest,gin.H{"error":err.Error()})
+			return
+		}
+		err := uc.UserService.UpdateUser(&user)
+		if err != nil{
+    ctx.JSON(http.StatusBadGateway,gin.H{"error":err.Error()})
+		return
+		}
+		
+		ctx.JSON(http.StatusOK,gin.H{"message":"success"})
 	}
 	
 	func (uc *UserController) DeleteUser(ctx *gin.Context) {
-		ctx.JSON(200,"")
+		username := ctx.Param("name")
+		err := uc.UserService.DeleteUser(&username)
+		if err != nil {
+			ctx.JSON(http.StatusBadGateway,gin.H{"error":err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK,gin.H{"message":"success"})
 	}
 
 	func (uc *UserController) RegisterUserRoutes(rg *gin.RouterGroup){
@@ -62,5 +80,5 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 		r.GET("/get/:name",uc.GetUser)
 		r.GET("/getall",uc.GetAll)
 		r.PATCH("/update",uc.UpdateUser)
-		r.DELETE("/delete",uc.DeleteUser)
+		r.DELETE("/delete/:name",uc.DeleteUser)
 	}
