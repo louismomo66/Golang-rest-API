@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"log"
 	"fmt"
+	"log"
 	"louis/go_projects/controllers"
 	"louis/go_projects/services"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
@@ -48,5 +48,5 @@ func main() {
 	basepath := server.Group("v1")
 	UserController.RegisterUserRoutes(basepath)
 
-	log.Fatal(server.Run(":9090"))
+	log.Fatal(server.Run(":9000"))
 }
